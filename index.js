@@ -1,185 +1,198 @@
-const canvas = document.getElementById('game')
-const maxWidth = canvas.width = 500
-const maxHeight = canvas.height = 500
-const ctx = canvas.getContext('2d')
+window.onload = function(){
+    const canvas = document.getElementById('canvas')
+    const ctx = canvas.getContext('2d')
+    canvas.width = 400
+    canvas.height = 500
 
-function spawnEnemy(game){
-    let enemies = [];
-    const position = {
-        x: Math.round((Math.random()*(game.maxWidth-0)+0)/100)*100,
-        y: random(-50, -10)
-    }
-    enemies.push(new Enemy(position, game))
-
-    return enemies;
-}
-
-function random(min, max){
-    return Math.floor(Math.random() * ((max - 1) - min) + min)
-}
-
-class Game{
-    constructor(maxWidth, maxHeight){
-        this.maxWidth = maxWidth
-        this.maxHeight = maxHeight
-        this.enemies = [];
-        this.ship = new Ship(this)
-        new InputHandle(this)
+    function spawnTiles(timer, game){
+        let tiles = []
+        const position = {
+            x: Math.floor((Math.random() * (game.maxWidth - 0) + 0) / 100) * 100,
+            y: random(-100, -20)
+        }
+        tiles.push(new Tiles(timer, position))
+        return tiles
     }
 
-    draw(ctx){
-        [this.ship, ...this.enemies].forEach(e => e.draw(ctx))
+    function random(min, max){
+        return Math.floor(Math.random() * (min - 1) + max)
     }
 
-    update(){
-        [this.ship, ...this.enemies].forEach(e => e.update())
-        if(this.enemies.length <= 0){
-            this.enemies = spawnEnemy(this)
+    class Game{
+        constructor(maxWidth, maxHeight){
+            this.maxWidth = maxWidth
+            this.maxHeight = maxHeight
+            this.keyNotes = [
+                new Keynote({x: 0, y: canvas.height - 100}, {x: 100 / 2 - 20, y: canvas.height - 30}, 100, 'D', 'red'),
+                new Keynote({x: 100, y: canvas.height - 100}, {x: 300 / 2 - 20, y: canvas.height - 30}, 100, 'F', 'black'),
+                new Keynote({x: 200, y: canvas.height - 100}, {x:500 / 2 - 20, y: canvas.height - 30}, 100, 'J', 'red'),
+                new Keynote({x: 300, y: canvas.height - 100}, {x: 700 / 2 - 20, y: canvas.height - 30}, 100, 'K', 'black'),
+            ]
+            this.tiles = spawnTiles(0,this)
         }
 
-        this.enemies.forEach((e, index) => {
-            if(e.position.y > this.maxHeight){
-                this.enemies.splice(index, 1)
+        notCrashed(object1, object2){
+            return object1.position.x > object2.position.x + object2.width ||
+                object1.position.x + object1.width < object2.position.x ||
+                object1.height > object2.position.y + object2.height ||
+                object1.height + object1.position.y < object2.height
+        }
+
+        draw(ctx){
+            [...this.tiles, ...this.keyNotes].forEach(e => e.draw(ctx));
+        }
+
+        update(timer){
+            [...this.tiles, ...this.keyNotes].forEach(e => e.update())
+            if(this.tiles.length <= 0){
+                this.tiles = spawnTiles(Math.floor(timer / 10), this)
             }
-        })
+            this.tiles.forEach((e, index) => {
+                if(e.position.y > this.maxHeight){
+                    this.tiles.splice(index, 1)
+                }
+            })
 
-    }
-}
+            document.addEventListener('keydown', e => {
+                switch (e.keyCode) {
+                    case 68:
+                        this.tiles.forEach((tile, index) => {
+                            if(!this.notCrashed(tile, this.keyNotes[0])){
+                                this.score += 10
+                                this.tiles.splice(index, 1)
+                            }
+                        })
+                        break;
+                    case 70:
+                        this.tiles.forEach((tile, index) => {
+                            if(!this.notCrashed(tile, this.keyNotes[1])){
+                                this.score += 10
+                                this.tiles.splice(index, 1)
+                            }
+                        })
+                        break;
+                    case 74:
+                        this.tiles.forEach((tile, index) => {
+                            if(!this.notCrashed(tile, this.keyNotes[2])){
+                                this.score += 10
+                                this.tiles.splice(index, 1)
+                            }
+                        })
+                        break;
+                    case 75:
+                        this.tiles.forEach((tile, index) => {
+                            if(!this.notCrashed(tile, this.keyNotes[3])){
+                                this.score += 10
+                                this.tiles.splice(index, 1)
+                            }
+                        })
+                        break;
+                
+                    default:
+                        break;
+                }
+            })
 
-class Ship{
-    constructor(game){
-        this.maxWidth = game.maxWidth;
-        this.maxHeight = game.maxHeight;
-
-        this.image = document.getElementById('ship');
-        this.width = 40;
-        this.height = 40;
-        this.position = {
-            x: this.maxWidth / 2 - this.width / 2,
-            y: this.maxHeight - this.height - 10
-        }
-
-        this.speed = 0;
-        this.maxSpeed = 6;
-    }
-
-    moveLeft(){
-        this.speed = -this.maxSpeed
-    }
-
-    moveRight(){
-        this.speed = this.maxSpeed
-    }
-
-    stop(){
-        this.speed = 0
-    }
-
-    draw(ctx){
-        ctx.drawImage(this.image, this.position.x, this.position.y, this.width, this.height);
-    }
-
-    update(){
-        if(this.position.x + this.width > this.maxWidth){
-            this.position.x = this.maxWidth - this.width
-        }
-
-        if(this.position.x < 0){
-            this.position.x = 0
-        }
-
-        this.position.x += this.speed
-    }
-}
-
-class InputHandle{
-    constructor(game){
-        document.addEventListener('keydown', e => {
-            switch(e.keyCode){
-                case 37:
-                    game.ship.moveLeft()
-                    break;
-                case 39:
-                    game.ship.moveRight()
-                    break;
-                default:
-                    break;
-            }
-        })
-        document.addEventListener('keyup', e => {
-            switch(e.keyCode){
-                case 37:
-                    if(game.ship.speed < 0){
-                        game.ship.stop()
+            this.tiles.forEach((tile, index) => {
+                this.keyNotes.forEach((keyNote) => {
+                    if(!this.notCrashed(tile, keyNote)){
+                        (this.score == 0) ? this.score -= 10 : this.score = 0
+                        this.tiles.splice(index, 1)
                     }
-                    break;
-                case 39:
-                    if(game.ship.speed > 0){
-                        game.ship.stop()
-                    }
-                    break;
-                default:
-                    break;
+                })
+            })
+
+        }
+    }
+
+    class Tiles{
+        constructor(timer, position){
+            this.position = position
+            this.size = 100
+            this.speed = 3
+            this.timer = timer
+        }
+
+        draw(ctx){
+            ctx.fillStyle = 'blue'
+            ctx.fillRect(this.position.x, this.position.y, this.size, this.size)
+        }
+
+        update(){
+            this.position.y += this.speed + this.timer
+        }
+    }
+
+    class Keynote{
+        constructor(position, positionText, sizeBlock, text, color){
+            this.position = position
+            this.positionText = positionText
+            this.sizeBlock = sizeBlock
+            this.text = text
+            this.color = color
+        }
+
+        draw(ctx){
+            // Block
+            ctx.fillStyle = this.color
+            ctx.fillRect(this.position.x, this.position.y, this.sizeBlock, this.sizeBlock)
+
+            // Text
+            ctx.fillStyle = 'yellow'
+            ctx.font = '30px Arial'
+            ctx.fillText(this.text, this.positionText.x, this.positionText.y)
+        }
+
+        update(){
+            
+        }
+    }
+
+
+    const game = new Game(canvas.width, canvas.height)
+    let countdown = 0
+    let timer = 0
+
+    const countDownInterval = setInterval(() => {
+        if(countdown == 3){
+            clearInterval(countDownInterval)
+
+            document.getElementById('music').play()
+            setInterval(() => {
+                timer += 1
+            }, 1000);
+
+
+            function animate(){
+                ctx.clearRect(0, 0, canvas.width, canvas.height)
+                game.update(timer)
+                game.draw(ctx)
+
+                ctx.fillStyle = 'black'
+                ctx.font = '50px Arial'
+                ctx.fillText(timer, 10, 60)
+
+                ctx.beginPath()
+                ctx.moveTo(100, 0)
+                ctx.lineTo(100, canvas.height)
+                ctx.stroke()
+                ctx.beginPath()
+                ctx.moveTo(200, 0)
+                ctx.lineTo(200, canvas.height)
+                ctx.stroke()
+                ctx.beginPath()
+                ctx.moveTo(300, 0)
+                ctx.lineTo(300, canvas.height)
+                ctx.stroke()
+                requestAnimationFrame(animate)
             }
-        })
-    }
-}
-
-class Enemy{
-    constructor(position, game){
-        this.size = game.maxWidth / 5
-        this.image = document.getElementById('musuh')
-        this.speed = 3
-        this.position = position,
-        this.maxHeight = game.maxHeight
-    }
-
-    draw(ctx){
-        ctx.drawImage(this.image, this.position.x, this.position.y, this.size, this.size)
-    }
-
-    update(){
-        this.position.y += this.speed
-    }
-}
-
-const game = new Game(maxWidth, maxHeight)
-let count = 0
-setInterval(() => {
-    ctx.clearRect(0, 0, maxWidth, maxHeight)
-    count += 1
-    ctx.font = 'bold 50px Arial'
-    ctx.textAlign = 'center'
-    ctx.fillStyle = '#fff'
-    ctx.baseine = 'bottom'
-    ctx.fillText(count, game.maxWidth / 2 - 20, game.maxHeight / 2)
-}, 1000)
-
-let timer = 0
-
-setTimeout(() => {
-    setInterval(() => {
-        timer += 1
+            requestAnimationFrame(animate)
+        }else{
+            ctx.clearRect(0, 0, canvas.width, canvas.height)
+            countdown += 1
+            ctx.fillStyle = 'black'
+            ctx.font = '50px Arial'
+            ctx.fillText(countdown, canvas.width / 2 - 25, canvas.height / 2)
+        }
     }, 1000)
-    function animate(){
-        ctx.clearRect(0, 0, maxWidth, maxHeight)
-        ctx.font = 'bold 15px Arial'
-        ctx.textAlign = 'center'
-        ctx.fillStyle = '#fff'
-        ctx.baseine = 'bottom'
-        ctx.fillText('Time: ' + timer + ' s', 40, 20)
-        let addSpeed = Math.floor(timer / 10);
-        console.log('add', addSpeed)
-        game.enemies.forEach(e => {
-            e.speed + addSpeed
-            console.log('speed', e.speed)
-        })
-        // console.log(game.enemies.forEach(e => console.log('enemy', e.speed + addSpeed)))
-        game.update()
-        game.draw(ctx)
-    
-        requestAnimationFrame(animate)
-    }
-    
-    requestAnimationFrame(animate)    
-}, 3200);
+}
