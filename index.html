@@ -5,17 +5,66 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="./bootstrap5/css/bootstrap.css">
 
     <style>
-        canvas{
-            border: 1px solid black;
+        body{
+            background-color: rgb(0, 25, 50);
+        }
+
+        .btn{
+            border-radius: 1.5rem !important;
         }
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
-    <audio src="./audio/0140. Avalanche - AShamaluevMusic.mp3" id="music"></audio>
+    
+    <section id="menu">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 mt-5">
+                    <h1 class="text-light fw-bold text-center">Piano Tiles</h1>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12 text-center">
+                    <h4 class="text-light">Game Instructions</h4>
+                </div>
+                <div class="col-6 mx-auto mt-2">
+                    <ul class="text-light">
+                        <li><span class="fw-bold">Choose your song</span> before play the games, if you are not picking any song the game wouldn't start</li>
+                        <li><span class="fw-bold">Press key D, F, J, K</span> to hit the tiles and get a score</li>
+                        <li><span class="fw-bold">The score will be increased</span> if player click the keys when the tiles is touched the border</li>
+                        <li><span class="fw-bold">Player fails</span> if the score below 50% in the end</li>
+                        <li><span class="fw-bold">Player can increase or decrease the speed</span> by clicking CTRL and (+) or CTRL and (-)</li>
+                        <li><span class="fw-bold">Player can increase or decrease the speed</span> by clicking CTRL and (+) or CTRL and (-)</li>
+                        <li><span class="fw-bold">Press Esc to open the pause popup.</span> Player can change the volume by moving the range</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-6 mx-auto">
+                    <hr class="text-light">
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-6 text-end">
+                    <a href="song.html" class="btn btn-primary px-4 py-2 fw-bold">Choose Song</a>
+                </div>
+                <div class="col-6 text-start">
+                    <a href="/game.html" class="btn btn-info text-light px-4 py-2 fw-bold disabled" id="play">Play Game</a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-    <script src="./index.js"></script>
+    <script>
+        const play = document.getElementById('play')
+        if(localStorage.getItem('song')){
+            play.classList.remove('disabled')
+        }
+    </script>
+
+    <link rel="stylesheet" href="./bootstrap5/js/bootstrap.js">
 </body>
 </html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./bootstrap5/css/bootstrap.css">
+
+    <style>
+        html, body{
+            background: linear-gradient(to top, rgb(25, 10, 40) 20%, rgb(0, 80, 160, .5));
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        canvas{
+            border: 0px solid white;
+            border-top: none;
+            border-bottom: none;
+            /* box-shadow: 10px 0 15px -4px rgba(31, 73, 125, 0.8), -10px 0 15px -4px rgba(31, 73, 125, 0.8); */
+            box-shadow: 10px 0 15px -5px rgba(255, 255, 255, 0.1), -10px 0 15px -5px rgba(255, 255, 255, 0.1);
+            background-color: rgba(0, 0, 0, .4);
+            color: rgb(1, 44, 136);
+            color: rgb(0, 33, 105);
+            /* background: linear-gradient(to top, rgba(0, 0, 0, .5), rgb(0, 50, 100, .25)); */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- <button id="play" class="position-absolute">Play</button> -->
+    <p id="timer" class="position-absolute p-3 text-light fs-5">Time: 0</p>
+    <!-- <p class="position-absolute p-3 text-light fs-5 mt-4">Score: 0 %</p> -->
+    <section id="game">
+        <div class="container h-100">
+            <div class="row h-100">
+                <div class="col-12 text-center h-100">
+                    <canvas id="canvas"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+    <audio src="./audio/0140. Avalanche - AShamaluevMusic.mp3" id="music"></audio>
+    <script src="./index.js"></script>
+    <link rel="stylesheet" href="./bootstrap5/js/bootstrap.js">
+</body>
+</html>
