@@ -130,12 +130,13 @@
                 if(index == 2){
                     localStorage.setItem('song', 'pop')
                 }
+
+                if(localStorage.getItem('song')){
+                    next.classList.remove('disabled')
+                }
             })
         });
 
-        if(localStorage.getItem('song')){
-            next.classList.remove('disabled')
-        }
     </script>
 
     <link rel="stylesheet" href="./bootstrap5/js/bootstrap.js">
